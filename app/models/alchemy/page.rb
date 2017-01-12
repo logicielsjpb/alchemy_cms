@@ -94,6 +94,11 @@ module Alchemy
     has_many :folded_pages
     has_many :legacy_urls, class_name: 'Alchemy::LegacyPageUrl'
 
+    has_many :translations_relation, foreign_key: "from_id", class_name: "Alchemy::PageTranslation", dependent: :destroy
+    has_many :translates_relation, foreign_key: "to_id", class_name: "Alchemy::PageTranslation", dependent: :destroy
+
+    has_many :translations, through: :translations_relation, source: :to
+
     validates_presence_of :language, on: :create, unless: :root
     validates_presence_of :page_layout, unless: :systempage?
     validates_format_of :page_layout, with: /\A[a-z0-9_-]+\z/, unless: -> { systempage? || page_layout.blank? }

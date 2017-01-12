@@ -1,0 +1,20 @@
+<%= form_tag  create_translation_admin_page_path,
+                     id: 'new_translation' do |f| %>
+
+    <%= hidden_field_tag :page_id, @page.id %>
+    <div class="inline-input">
+      <div class="left-column">
+        <%= select_tag(
+                    'language_id',
+                    options_for_select(Alchemy::Language.on_current_site.map { |l| [l.name, l.id] }, Alchemy::Language.current.id),
+                    class: 'alchemy_selectbox short'
+            ) %>
+      </div>
+      <div class="right-column">
+        <button class="with_icon">
+          <%= render_icon(:create) %>
+          <%= Alchemy.t(:add) %>
+        </button>
+      </div>
+    </div>
+<% end %>

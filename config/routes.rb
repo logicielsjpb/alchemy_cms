@@ -38,6 +38,7 @@ Alchemy::Engine.routes.draw do
         post :publish
         post :fold
         post :visit
+        post :create_translation
         get :configure
         get :preview
         get :info

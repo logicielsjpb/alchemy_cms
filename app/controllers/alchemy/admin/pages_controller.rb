@@ -10,7 +10,7 @@ module Alchemy
 
       before_action :load_page,
         only: [:show, :info, :unlock, :visit, :publish, :configure, :edit, :update, :destroy, :fold,
-               :tree]
+               :tree, :create_translation]
 
       before_action :set_root_page,
         only: [:index, :show, :sort, :order]
@@ -231,6 +231,42 @@ module Alchemy
         respond_to { |format| format.js }
       end
 
+      def create_translation
+        current_page = @page
+        pages_to_copy = []
+        page_copy = nil
+
+        #we're moving up the tree, trying to find a page that is either translated in the correct language, or the root page, to set as parent
+        while !current_page.language_root && current_page.translations.where("alchemy_page_translations.language_id = ?", params[:language_id]).count==0
+          last_page = page_copy
+          page_copy= Page.copy(current_page, language_id: params[:language_id])
+          PageTranslation.create(to:page_copy, from: current_page, language_id: params[:language_id])
+          PageTranslation.create(from:page_copy, to: current_page, language_id: current_page.language_id)
+
+          if last_page
+            last_page.move_to_child_of( page_copy)
+          end
+          current_page = current_page.parent
+        end
+
+        puts Page.language_root_for(params[:language_id]).inspect
+
+        if page_copy
+          if current_page.translations.where("alchemy_page_translations.language_id = ?", params[:language_id]).count >0
+           page_copy.move_to_child_of (current_page.translations.where("alchemy_page_translations.language_id = ?", params[:language_id]).first)
+          else
+            page_copy.move_to_child_of(Page.language_root_for(params[:language_id]))
+          end
+          page_copy.save!
+        end
+        puts @page.translations.inspect
+        puts params.inspect
+
+        do_redirect_to edit_admin_page_path id: (@page.translations.where("alchemy_page_translations.language_id = ?", params[:language_id])).first.id
+
+      end
+
+
       private
 
       def copy_of_language_root
@@ -395,6 +431,8 @@ module Alchemy
                                       user: current_alchemy_user,
                                       full: params[:full] == 'true')
       end
+
+
     end
   end
 end

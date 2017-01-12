@@ -142,6 +142,7 @@ module Alchemy
         can [
           :copy,
           :copy_language_tree,
+          :create_translation,
           :flush,
           :order,
           :sort,

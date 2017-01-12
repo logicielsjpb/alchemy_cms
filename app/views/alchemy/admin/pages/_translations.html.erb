@@ -1,0 +1,23 @@
+<%= render_message do %>
+    <p><%== Alchemy.t(:translation_info_text) %></p>
+<% end %>
+
+<table class="list" id="legacy_page_urls">
+  <tr>
+    <th class="name">
+      <%= t("language") %>
+    </th>
+    <th class=""><%= t("name")%></th>
+  </tr>
+  <%= render partial: 'alchemy/admin/translations/translation',
+             collection: @page.translations_relation %>
+  <tr class="even" id="no_page_links_notice" style="display: <%= @page.legacy_urls.any? ? 'none' : 'table-row' %>">
+    <td><%= Alchemy.t('No page links for this page found') %></td>
+    <td class="tools"></td>
+  </tr>
+</table>
+
+<fieldset>
+  <legend><%= Alchemy.t('Add page link') %></legend>
+  <%= render 'alchemy/admin/translations/new' %>
+</fieldset>
