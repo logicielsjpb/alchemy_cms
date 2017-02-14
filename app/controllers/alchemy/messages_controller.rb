@@ -48,8 +48,7 @@ module Alchemy
 
     def index #:nodoc:
       redirect_to show_page_path(
-        urlname: @page.urlname,
-        locale: prefix_locale? ? @page.language_code : nil
+        urlname: @page.urlname
       )
     end
 
@@ -103,8 +102,7 @@ module Alchemy
         urlname = Language.current_root_page.urlname
       end
       redirect_to show_page_path(
-        urlname: urlname,
-        locale: prefix_locale? ? Language.current.code : nil
+        urlname: urlname
       )
     end
 
