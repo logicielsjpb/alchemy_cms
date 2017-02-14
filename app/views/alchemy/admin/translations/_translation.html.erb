@@ -1,6 +1,7 @@
 <tr class="even" >
-  <td class="name"><%= Alchemy::Language::find(translation.language_id).code %></td>
-  <td class="tools">
-    <%= translation.to.name %>
+  <td class="name">
+    <%= link_to translation.to.name, alchemy.edit_admin_page_path(translation.to)  %>
   </td>
+  <td class="tools"><%= Alchemy::Language::find(translation.language_id).code %></td>
+
 </tr>
