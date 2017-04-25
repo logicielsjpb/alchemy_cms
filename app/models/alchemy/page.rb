@@ -79,7 +79,9 @@ module Alchemy
       :title,
       :urlname,
       :visible,
-      :layoutpage
+      :layoutpage,
+      :long_excerpt,
+      :short_excerpt
     ]
 
     acts_as_taggable
