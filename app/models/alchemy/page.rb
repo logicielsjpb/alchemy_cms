@@ -256,6 +256,24 @@ module Alchemy
         current.self_and_ancestors.contentpages
       end
 
+      def find_in_current_language id_or_slug
+
+        if id_or_slug.is_a? Integer
+          field = :id
+        else
+          field = :urlname
+        end
+        page ||= Language.current.pages.contentpages.where(
+          language_code: Language.current.code).where(field => id_or_slug).first
+
+        page ||= Page::contentpages.joins(:translations).where(field => id_or_slug).
+         find_by(
+          language_code: Language.current.code
+        )
+
+        page
+      end
+
       private
 
       # Aggregates the attributes from given source for copy of page.
