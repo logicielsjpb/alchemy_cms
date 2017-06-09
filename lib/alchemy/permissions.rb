@@ -149,6 +149,8 @@ module Alchemy
           :switch_language
         ], Alchemy::Page
 
+        can :manage, Alchemy::PageTranslation
+
         # Resources which may be locked via template permissions
         #
         #     # config/alchemy/page_layouts.yml

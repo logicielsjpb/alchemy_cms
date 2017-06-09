@@ -256,6 +256,8 @@ module Alchemy
         current.self_and_ancestors.contentpages
       end
 
+
+
       def find_in_current_language id_or_slug
 
         if id_or_slug.is_a? Integer
@@ -273,6 +275,7 @@ module Alchemy
 
         page
       end
+
 
       private
 
@@ -397,6 +400,48 @@ module Alchemy
         new_child.move_to_child_of(new_parent)
         child.copy_children_to(new_child) unless child.children.blank?
       end
+    end
+
+
+
+    #creates a translation for the page in selected locale if there is none, will return the page translation if it already exists, or the langugage root
+    def translate_in language
+      #we're moving up the tree, trying to find a page that is either translated in the correct language, or the root page, to set as parent
+      if !self.language_root && self.translations.where("alchemy_page_translations.language_id = ?", language).count==0
+        #this page is not translated, so we will create a translation and set it's parent to be the translated parent
+        page_copy= Page.copy(self, language_id: language)
+        link_translation page_copy
+
+        #move it to be the translation of the parent
+        page_copy.move_to_child_of( parent.translate_in language)
+        return page_copy
+      elsif self.language_root
+        #we've hit the root, so just return the root in the target language
+        return Page.language_root_for(language)
+      else
+        #this page is already translated
+        return self.translations.where("alchemy_page_translations.language_id = ?", language)
+      end
+
+    end
+
+    #link this page to one translation
+    def link_translation to
+      self.translations.each do |trans|
+        #the "to" page is also probably supposed to be a translation of everything the "from" page is a translation of
+        PageTranslation.create(to: to, from: trans, language_id: to.language_id)
+        PageTranslation.create(from: to, to: trans, language_id: trans.language_id)
+      end
+
+      PageTranslation.create(to: to, from: self, language_id: to.language_id)
+      PageTranslation.create(from: to, to: self, language_id: self.language_id)
+
+    end
+
+    def unlink_translation to
+      PageTranslation.where(from: self, to: to).destroy_all
+      PageTranslation.where(to: self, from: to).destroy_all
+
     end
 
     # Publishes the page.
