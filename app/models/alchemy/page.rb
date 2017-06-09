@@ -390,7 +390,7 @@ module Alchemy
       self_and_ancestors.find_by(language_root: true)
     end
 
-    def copy_children_to(new_parent)
+    def copy_children_to(new_parent, translate: false)
       children.each do |child|
         next if child == new_parent
         new_child = Page.copy(child, {
@@ -398,7 +398,10 @@ module Alchemy
           language_code: new_parent.language_code
         })
         new_child.move_to_child_of(new_parent)
-        child.copy_children_to(new_child) unless child.children.blank?
+        if translate
+         child.link_translation new_child
+        end
+        child.copy_children_to(new_child, translate: translate) unless child.children.blank?
       end
     end
 
