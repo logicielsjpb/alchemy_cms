@@ -7,7 +7,11 @@ module Alchemy
     let(:rootpage)      { Page.root }
     let(:language)      { Language.default }
     let(:klingon)       { create(:alchemy_language, :klingon) }
-    let(:language_root) { create(:alchemy_page, :language_root) }
+    let(:french)         { create(:alchemy_language, :french) }
+    let(:english)       { create(:alchemy_language, :english) }
+    let(:language_root) { create(:alchemy_page, :language_root, language: klingon) }
+    let(:french_root) { create(:alchemy_page, :language_root, language: french) }
+    let(:english_root) { create(:alchemy_page, :language_root, language: english) }
     let(:page)          { mock_model(Page, page_layout: 'foo') }
     let(:public_page)   { create(:alchemy_page, :public) }
     let(:news_page)     { create(:alchemy_page, :public, page_layout: 'news', do_not_autogenerate: false) }
@@ -2483,5 +2487,21 @@ module Alchemy
         end
       end
     end
+    describe '#translate_in' do
+      let(:page) { create(:alchemy_page, page_layout: 'readonly') }
+
+      context 'when there are only two languages' do
+        let(:parent_1) { create(:alchemy_page, parent_id: language_root.id, name: 'Parent 1', language: klingon, visible: true) }
+        let(:child_1)  { create(:alchemy_page, parent_id: parent_1.id, name: 'child 1', visible: true) }
+        it 'copies the page and its parent to the target language' do
+          french_child = child_1.translate_in french
+          expect(child_1.translations.size).to eq(1)
+          expect(parent_1.translations.size).to eq(1)
+          expect(french_child.translations.size).to eq(1)
+        end
+
+      end
+    end
+
   end
 end

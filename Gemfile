@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gemspec
 
 # Profiling
+#Default / baseline
+gem 'rails', '~>  4.2.0'
 gem 'rack-mini-profiler', group: :development, require: false
 
 gem 'sqlite3' if ENV['DB'].nil? || ENV['DB'] == 'sqlite'
@@ -39,7 +41,7 @@ end
 
 # We need this if we want to start the dummy app in development mode
 group :development, :production do
-  gem 'quiet_assets'
+  #gem 'quiet_assets'
 end
 
 # We need this if we want to start the dummy app in production, ie on Teatro.io
